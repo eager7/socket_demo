@@ -71,31 +71,33 @@ int main(int argc, char const *argv[])
 							break;
     					}
     				}
-    			}
-
-    			for (i = 0; i < 5; ++i){
-    	    		if ((iSockClient[i] != 0) && FD_ISSET(iSockClient[i], &fdSelect)){
-	    				int irecv = recv(iSockClient[i], aRecv, sizeof(aRecv), 0);
-	    				checkError(irecv);
-	    				if (0 == irecv){
-	    					printf("this client[%d] disconnect, close it\n", i);
-	    					FD_CLR(iSockClient[i], &fdAll);
-	    					close(iSockClient[i]);
-	    					iNumberClient --;
-	    					if(iNumberClient < 5){
-	    						FD_SET(iSocketFd, &fdAll);
-	    					}
-	    					break;
-	    				}
-	    				printf("recv client[%d] data:%s\n", i, aRecv);
-	    				checkError(send(iSockClient[i], aSend, strlen(aSend), 0));
-	    				break;
-	    			}		
-    			}
-    			sleep(0);
+    			} else {
+					for (i = 0; i < 5; ++i){
+						if ((iSockClient[i] != 0) && FD_ISSET(iSockClient[i], &fdSelect)){
+							int irecv = recv(iSockClient[i], aRecv, sizeof(aRecv), 0);
+							checkError(irecv);
+							if (0 == irecv){
+								printf("this client[%d] disconnect, close it\n", i);
+								FD_CLR(iSockClient[i], &fdAll);
+								close(iSockClient[i]);
+								iSockClient[i] = 0;
+								iNumberClient --;
+								if(iNumberClient < 5){
+									FD_SET(iSocketFd, &fdAll);
+								}
+								break;
+							}
+							printf("recv client[%d] data:%s\n", i, aRecv);
+							checkError(send(iSockClient[i], aSend, strlen(aSend), 0));
+							break;
+						}		
+					}
+					
+				}
     		}
     		break;
     	}
+    	sleep(0);
     }
 
 	return 0;
