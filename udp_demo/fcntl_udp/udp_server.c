@@ -4,6 +4,10 @@
 #include <errno.h>
 #include <arpa/inet.h>
 #include <unistd.h> //usleep
+#include <fcntl.h>
+
+
+#define checkError(ret) do{if(-1==ret){printf("[%d]err:%s\n", __LINE__, strerror(errno));exit(1);}}while(0)
 
 int udp_server_init(char *netAddr, int port);
 
@@ -52,19 +56,12 @@ int main(int argc, char *argv[])
 int udp_server_init(char *netAddr, int port)
 {
 	iSocketFd = socket(AF_INET, SOCK_DGRAM, 0);//create a ucp socket file
-	if(-1 == iSocketFd){
-		printf("create socket fd err:%s\n", strerror(errno));
-		return -1;
-	}
+	checkError(iSocketFd);
 
 	int on = 1;
-    struct timeval timeout={2,5};//timeout
-    if((-1 == setsockopt(iSocketFd,SOL_SOCKET,SO_REUSEADDR,&on,sizeof(on))) || //allow up serval server program
-       (-1 == setsockopt(iSocketFd,SOL_SOCKET,SO_RCVTIMEO,&timeout,sizeof(timeout))) ||
-       (-1 == setsockopt(iSocketFd,SOL_SOCKET,SO_RCVTIMEO,&timeout,sizeof(timeout)))){
-    	printf("setsockopt err:%s\n", strerror(errno));
-    	return -1;
-    }
+  	checkError(setsockopt(iSocketFd,SOL_SOCKET,SO_REUSEADDR,&on,sizeof(on)));
+
+  	checkError(fcntl(iSocketFd, F_SETFL, (fcntl(iSocketFd, F_GETFL) | O_NONBLOCK)));//set noblock
 
 	//create socket addr struct
 	struct sockaddr_in server_addr;
@@ -76,11 +73,7 @@ int udp_server_init(char *netAddr, int port)
 	} else {
 		server_addr.sin_addr.s_addr = inet_addr(netAddr); //accept one interface of host
 	}
-
-	if(-1 == bind(iSocketFd, (struct sockaddr*)&server_addr, sizeof(server_addr))){
-		printf("bind error:%s\n", strerror(errno));
-		return -1;
-	}
+	checkError(bind(iSocketFd, (struct sockaddr*)&server_addr, sizeof(server_addr)));
 
 	return 0;
 }
