@@ -13,7 +13,7 @@ int main()
 	hint.ai_family = AF_INET;
 	hint.ai_socktype = SOCK_STREAM;
 	
-	if(-1 == getaddrinfo(NULL, "8080", &hint, &result)){
+	if(-1 == getaddrinfo("firefly-z", "7878", &hint, &result)){
 		printf("getaddrinfo err:%s", strerror(errno));
 		return -1;
 	}

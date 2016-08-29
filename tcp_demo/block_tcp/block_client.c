@@ -24,8 +24,8 @@ reconnect:
 	struct sockaddr_in server_addr;  
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;  
-    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);        /*receive any address*/
-    //server_addr.sin_addr.s_addr = inet_addr("10.128.118.43");
+    //server_addr.sin_addr.s_addr = htonl(INADDR_ANY);        /*receive any address*/
+    server_addr.sin_addr.s_addr = inet_addr("192.168.4.10");
     server_addr.sin_port = htons(7878);
 	while(1){
 		printf("conncet to server...\n");
@@ -39,7 +39,7 @@ reconnect:
 	const char *aSend = "This is tcp client";
     while(1)
     {
-    	checkError(send(iSocketFd, aSend, strlen(aSend), 0));
+//    	checkError(send(iSocketFd, aSend, strlen(aSend), 0));
    		
    		printf("wait server data...\n");
     	int irecv = recv(iSocketFd, aRecv, sizeof(aRecv), 0);
