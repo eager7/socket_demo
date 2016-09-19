@@ -32,31 +32,21 @@
 #include <vector>
 #include <fstream>
 
-#if defined __WIN32 || defined __WIN64
-    #define WINDOWS
-#endif
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
-#ifdef WINDOWS
-    #include <winsock.h>
-#else
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
-    #include <netdb.h>
-#endif
 
 #define SOCKET_MAX_BUFFER_LEN 1024
 
 using namespace std;
 
-namespace Socket
+namespace mSocket
 {
     typedef int SocketId;
     typedef string Ip;
     typedef unsigned int Port;
-#ifdef WINDOWS
-    typedef unsigned int socklen_t;
-#endif
     
     class SocketException : public exception
     {
@@ -107,14 +97,8 @@ namespace Socket
 
     class CommonSocket
     {
-    private:
-#ifdef WINDOWS
-        static unsigned int _num_sockets;
-#endif
-        void _socket(void);
-
     protected:
-        SocketId _socket_id;
+        int _socket_id;
         int _socket_type;
         bool _opened;
         bool _binded;
@@ -145,8 +129,8 @@ namespace Socket
         template <class T> int send(Address, vector<T>);
         
         template <class T> int receive(Address*, T*, size_t, unsigned int*);
-        template <class T> Datagram<T*> receive(T*, size_t);
-        template <class T, size_t N> Datagram<T[N]> receive(size_t);
+        template <class T> Datagram<T*> receive(T*, size_t len = SOCKET_MAX_BUFFER_LEN);
+        template <class T, size_t N> Datagram<T[N]> receive(size_t len = N);
         template <class T> Datagram<T> receive(void);
         template <class T> Datagram<vector<T> > receive(size_t);
     };
@@ -163,7 +147,7 @@ namespace Socket
         Port port(void);
         Address address(void);
         
-        void listen_on_port(Port, unsigned int);
+        void listen_on_port(Port, unsigned int listeners = 1);
         void connect_to(Address);
         
         TCP accept_client(void);
@@ -175,13 +159,6 @@ namespace Socket
         void receive_file(string);
     };
 }
-
-#include "SocketException.cpp"
-#include "CommonSocket.cpp"
-#include "Datagram.cpp"
-#include "Address.cpp"
-#include "UDP.cpp"
-#include "TCP.cpp"
 
 #endif
 

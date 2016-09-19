@@ -21,13 +21,9 @@
  * Boston, MA  02110-1301  USA
  */
 
-#ifndef _TCP_CPP_
-
-#define _TCP_CPP_
-
 #include "Socket.hpp"
 
-namespace Socket
+namespace mSocket
 {
     TCP::TCP(void) : CommonSocket(SOCK_STREAM)
     {
@@ -55,7 +51,7 @@ namespace Socket
         return Address(this->_address);
     }
     
-    void TCP::listen_on_port(Port port, unsigned int listeners = 1)
+    void TCP::listen_on_port(Port port, unsigned int listeners)
     {
         CommonSocket::listen_on_port(port);
         
@@ -204,4 +200,3 @@ namespace Socket
     }
 }
 
-#endif

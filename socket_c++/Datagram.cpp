@@ -21,13 +21,9 @@
  * Boston, MA  02110-1301  USA
  */
 
-#ifndef _DATAGRAM_CPP_
-
-#define _DATAGRAM_CPP_
-
 #include "Socket.hpp"
 
-namespace Socket
+namespace mSocket
 {
     template <class DataType>
     template <class T>
@@ -38,4 +34,3 @@ namespace Socket
     }
 }
 
-#endif

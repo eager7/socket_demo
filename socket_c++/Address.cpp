@@ -21,13 +21,9 @@
  * Boston, MA  02110-1301  USA
  */
 
-#ifndef _ADDRESS_CPP_
-
-#define _ADDRESS_CPP_
-
 #include "Socket.hpp"
 
-namespace Socket
+namespace mSocket
 {
     void Address::_address(Ip ip, Port port)
     {
@@ -112,4 +108,3 @@ namespace Socket
     }
 }
 
-#endif

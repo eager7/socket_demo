@@ -21,13 +21,9 @@
  * Boston, MA  02110-1301  USA
  */
 
-#ifndef _UDP_CPP_
-
-#define _UDP_CPP_
-
 #include "Socket.hpp"
 
-namespace Socket
+namespace mSocket
 {
     UDP::UDP(void) : CommonSocket(SOCK_DGRAM)
     {
@@ -136,7 +132,7 @@ namespace Socket
     }
 
     template <class T>
-    Datagram<T*> UDP::receive(T *buffer, size_t len = SOCKET_MAX_BUFFER_LEN)
+    Datagram<T*> UDP::receive(T *buffer, size_t len)
     {
         Datagram<T*> ret;
         
@@ -147,7 +143,7 @@ namespace Socket
     }
 
     template <class T, size_t N>
-    Datagram<T[N]> UDP::receive(size_t len = N)
+    Datagram<T[N]> UDP::receive(size_t len)
     {
         Datagram<T[N]> ret;
         ret.received_bytes = this->receive<T>(&ret.address, ret.data, len, &ret.received_elements);
@@ -187,4 +183,3 @@ namespace Socket
     }
 }
 
-#endif

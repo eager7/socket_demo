@@ -21,13 +21,9 @@
  * Boston, MA  02110-1301  USA
  */
 
-#ifndef _SOCKETEXCEPTION_CPP_
-
-#define _SOCKETEXCEPTION_CPP_
-
 #include "Socket.hpp"
 
-namespace Socket
+namespace mSocket
 {
     SocketException::SocketException(const string &message)
     {
@@ -43,11 +39,10 @@ namespace Socket
         return this->_error.c_str();
     }
 
-    ostream& operator<< (ostream &out, SocketException &e)
+    ostream& operator << (ostream &out, SocketException &e)
     {
         out << e.what();
         return out;
     }
 }
 
-#endif
