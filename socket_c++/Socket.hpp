@@ -64,20 +64,20 @@ namespace mSocket
     struct Address : protected sockaddr_in
     {
     private:
-        void _address(Ip, Port);
+        void _address(string, unsigned int);
 
     public:
         Address();
-        Address(Port);
-        Address(Ip, Port);
+        Address(unsigned int);
+        Address(string, unsigned int);
         Address(struct sockaddr_in);
         Address(const Address&);
 
-        Ip ip(void);
-        Ip ip(Ip);
+        string ip(void);
+        string ip(string);
 
-        Port port(void);
-        Port port(Port);
+        unsigned int port(void);
+        unsigned int port(unsigned int);
 
         friend ostream& operator<< (ostream&, Address&);
     };
@@ -121,11 +121,11 @@ namespace mSocket
         UDP(void);
         UDP(const UDP&);
         
-        template <class T> int send(Ip, Port, const T*, size_t);
+        template <class T> int send(string, unsigned int, const T*, size_t);
         template <class T> int send(Address, const T*, size_t);
-        template <class T> int send(Ip, Port, T);
+        template <class T> int send(string, unsigned int, T);
         template <class T> int send(Address, T);
-        template <class T> int send(Ip, Port, vector<T>);
+        template <class T> int send(string, unsigned int, vector<T>);
         template <class T> int send(Address, vector<T>);
         
         template <class T> int receive(Address*, T*, size_t, unsigned int*);

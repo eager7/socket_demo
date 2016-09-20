@@ -21,11 +21,15 @@
  * Boston, MA  02110-1301  USA
  */
 
+#ifndef _ADDRESS_CPP_
+
+#define _ADDRESS_CPP_
+
 #include "Socket.hpp"
 
 namespace mSocket
 {
-    void Address::_address(Ip ip, Port port)
+    void Address::_address(string ip, unsigned int port)
     {
         this->sin_family = AF_INET;
         this->ip(ip);
@@ -37,12 +41,12 @@ namespace mSocket
         _address("0.0.0.0", 0);
     }
 
-    Address::Address(Port port)
+    Address::Address(unsigned int port)
     {
         _address("0.0.0.0", port);
     }
 
-    Address::Address(Ip ip, Port port)
+    Address::Address(string ip, unsigned int port)
     {
         _address(ip, port);
     }
@@ -59,43 +63,28 @@ namespace mSocket
         this->sin_port = address.sin_port;
     }
 
-    Ip Address::ip(void)
+    string Address::ip(void)
     {
         return inet_ntoa(this->sin_addr);
     }
 
-    Ip Address::ip(Ip ip)
+    string Address::ip(string ip)
     {
-#ifdef WINDOWS
-        unsigned long address = inet_addr(ip.c_str());
-
-        if (address == INADDR_NONE)
-        {
-            stringstream error;
-            error << "[ip] with [ip=" << ip << "] Invalid ip address provided";
-            throw SocketException(error.str());
-        }
-        else
-        {
-            this->sin_addr.S_un.S_addr = address;
-        }
-#else
         if (inet_aton(ip.c_str(), &this->sin_addr) == 0)
         {
             stringstream error;
             error << "[ip] with [ip=" << ip << "] Invalid ip address provided";
             throw SocketException(error.str());
         }
-#endif
         return this->ip();
     }
 
-    Port Address::port(void)
+    unsigned int Address::port(void)
     {
         return ntohs(this->sin_port);
     }
 
-    Port Address::port(Port port)
+    unsigned int Address::port(unsigned int port)
     {
         this->sin_port = htons(port);
         return this->port();
@@ -108,3 +97,4 @@ namespace mSocket
     }
 }
 
+#endif

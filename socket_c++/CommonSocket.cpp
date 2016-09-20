@@ -56,7 +56,8 @@ namespace mSocket
     }
     
     void CommonSocket::listen_on_port(Port port) {
-        if (this->_binded) throw SocketException("[listen_on_port] Socket already binded to a port, close the socket before to re-bind");
+        if (this->_binded)
+            throw SocketException("[listen_on_port] Socket already binded to a port, close the socket before to re-bind");
 
         if (!this->_opened) this->open();
 
