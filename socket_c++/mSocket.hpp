@@ -79,7 +79,7 @@ namespace mSocket
         unsigned int port(void);
         unsigned int port(unsigned int);
 
-        friend ostream& operator<< (ostream&, Address&);
+        friend ostream& operator<< (ostream &out, Address &address);
     };
 
     template <class DataType>
