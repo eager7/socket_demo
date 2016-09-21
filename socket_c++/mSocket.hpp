@@ -21,9 +21,9 @@
  * Boston, MA  02110-1301  USA
  */
 
-#ifndef _SOCKET_HPP_
+#ifndef _MSOCKET_HPP_
 
-#define _SOCKET_HPP_
+#define _MSOCKET_HPP_
 
 #include <iostream>
 #include <sstream>
@@ -143,11 +143,11 @@ namespace mSocket
         TCP(void);
         TCP(const TCP&);
         
-        Ip ip(void);
-        Port port(void);
+        string ip(void);
+        unsigned int port(void);
         Address address(void);
         
-        void listen_on_port(Port, unsigned int listeners = 1);
+        void listen_on_port(unsigned int, unsigned int listeners = 5);
         void connect_to(Address);
         
         TCP accept_client(void);

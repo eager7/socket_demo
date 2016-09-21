@@ -21,13 +21,11 @@
  * Boston, MA  02110-1301  USA
  */
 
-#include "Socket.hpp"
+#include "mSocket.hpp"
 
 namespace mSocket
 {
-    TCP::TCP(void) : CommonSocket(SOCK_STREAM)
-    {
-    }
+    TCP::TCP(void) : CommonSocket(SOCK_STREAM) { }
     
     TCP::TCP(const TCP &tcp) : CommonSocket()
     {
@@ -51,8 +49,9 @@ namespace mSocket
         return Address(this->_address);
     }
     
-    void TCP::listen_on_port(Port port, unsigned int listeners)
+    void TCP::listen_on_port(unsigned int port, unsigned int listeners)
     {
+        this->_address.port(port);
         CommonSocket::listen_on_port(port);
         
         if (listen(this->_socket_id, listeners) != 0)
@@ -99,15 +98,16 @@ namespace mSocket
         if (!this->_opened) throw SocketException("[send] Socket not opened");
         
         len *= sizeof(T);
-        if (len > (SOCKET_MAX_BUFFER_LEN * sizeof(T)))
-        {
+        if (len > (SOCKET_MAX_BUFFER_LEN * sizeof(T))) {
             stringstream error;
             error << "[send] [len=" << len << "] Data length higher then max buffer len (" << SOCKET_MAX_BUFFER_LEN << ")";
             throw SocketException(error.str());
         }
         
         int ret;
-        if ((ret = ::send(this->_socket_id, (const char*)buffer, len, 0)) == -1) throw SocketException("[send] Cannot send");
+        if ((ret = (int)::send(this->_socket_id, (const void*)buffer, len, 0)) == -1) {
+            throw SocketException("[send] Cannot send");
+        }
         return ret;
     }
     
@@ -118,15 +118,16 @@ namespace mSocket
         if (!this->_opened) throw SocketException("[send_file] Socket not opened");
         
         len *= sizeof(T);
-        if (len > (SOCKET_MAX_BUFFER_LEN * sizeof(T)))
-        {
+        if (len > (SOCKET_MAX_BUFFER_LEN * sizeof(T))) {
             stringstream error;
             error << "[receive] [len=" << len << "] Data length higher then max buffer len (" << SOCKET_MAX_BUFFER_LEN << ")";
             throw SocketException(error.str());
         }
         
         int ret;
-        if ((ret = recv(this->_socket_id, buffer, len, 0)) == -1) throw SocketException("[send] Cannot receive");
+        if ((ret = (int)recv(this->_socket_id, buffer, len, 0)) == -1) {
+            throw SocketException("[send] Cannot receive");
+        }
         return ret;
     }
     

@@ -25,7 +25,7 @@
 
 #define _ADDRESS_CPP_
 
-#include "Socket.hpp"
+#include "mSocket.hpp"
 
 namespace mSocket
 {
@@ -86,7 +86,7 @@ namespace mSocket
 
     unsigned int Address::port(unsigned int port)
     {
-        this->sin_port = htons(port);
+        this->sin_port = htons((uint16_t)port);
         return this->port();
     }
 

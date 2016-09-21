@@ -21,7 +21,7 @@
  * Boston, MA  02110-1301  USA
  */
 
-#include "Socket.hpp"
+#include "mSocket.hpp"
 
 namespace mSocket
 {
@@ -55,7 +55,7 @@ namespace mSocket
         this->_binded = false;
     }
     
-    void CommonSocket::listen_on_port(Port port) {
+    void CommonSocket::listen_on_port(unsigned int port) {
         if (this->_binded)
             throw SocketException("[listen_on_port] Socket already binded to a port, close the socket before to re-bind");
 
