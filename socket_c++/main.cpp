@@ -89,27 +89,24 @@ int main()
 
     try {
         Thread thread_server(server, "tcp_server");
-        thread_server.start();
-
         Thread thread_client(client, "tcp_client");
-        thread_client.start();
+        Thread test(NULL, "test");
 
         while (main_loop){
             cout << "main loop:" << endl;
-            cout << thread_server << endl;
-            cout << thread_client << endl;
+            //cout << thread_server << endl;
+            //cout << thread_client << endl;
 
             sleep(1);
         }
         cout << "exit main loop" << endl;
-        thread_client.stop();
         thread_server.stop();
+        thread_client.stop();
+        test.stop();
     }
     catch (ThreadException &e) {
         cout << e << endl;
     }
-
-
 
     return 0;
 }

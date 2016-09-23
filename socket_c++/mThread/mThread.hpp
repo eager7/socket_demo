@@ -36,6 +36,7 @@ using namespace std;
 namespace mThread
 {
 #define THREAD_SIGNAL SIGUSR1
+
     typedef enum{
         T_TRUE = 0x01,
         T_FALSE = 0x00,
@@ -49,7 +50,7 @@ namespace mThread
         E_THREAD_RUNNING = 0x01,   /**< Thread running */
         E_THREAD_STOPPING = 0x02,  /**< Thread signaled to stop */
     } state_t;
-    typedef void *(*thread_loop)(void *info);
+    typedef void *(*thread_loop)(void *arg);
 
     class ThreadException : public exception
     {
@@ -69,18 +70,13 @@ namespace mThread
         string name;
         state_t state;
         detach_t detach;
-        void *pthread_data;
         pthread_t thread_id;
 
         ThreadInfo():
                 name(NULL),state(E_THREAD_STOPPED),
-                detach(E_THREAD_JOINABLE),pthread_data(NULL),thread_id(0) { }
-        ThreadInfo(string name, detach_t detach, void *pthread_data):
-                state(E_THREAD_STOPPED),thread_id(0) {
-            this->name = name;
-            this->detach = detach;
-            this->pthread_data = pthread_data;
-        }
+                detach(E_THREAD_JOINABLE),thread_id(0) { }
+        ThreadInfo(string name, detach_t detach):
+                name(name),state(E_THREAD_STOPPED),detach(detach),thread_id(0) { }
     };
 
     template <class T>
@@ -136,26 +132,7 @@ namespace mThread
         }
     };
 
-    class Thread
-    {
-    public:
-        thread_loop func;
-
-        Thread();
-        Thread(Thread &);
-        Thread(thread_loop target=NULL, string name = "None", void *pthread_data = NULL, detach_t detach = E_THREAD_JOINABLE);
-        ~Thread();
-
-        void create(detach_t detach, void *info);
-        void start();
-        void stop();
-        void exit();
-
-        string name(){return this->thread_info.name;}
-        state_t state(){return this->thread_info.state;}
-        pthread_t thread_id(){return this->thread_info.thread_id;}
-
-        friend ostream& operator<< (ostream &out, Thread &thread);
+    class CommonThread{
     protected:
         bool_t _create;
         void install_signal();
@@ -163,7 +140,30 @@ namespace mThread
     private:
         ThreadInfo thread_info;
         static void thread_signal_handler(int sig);
+        static void* start_thread(void* arg);
 
+    public:
+        thread_loop func;
+        CommonThread();
+        CommonThread(CommonThread &t);
+        CommonThread(string name = "None", detach_t detach = E_THREAD_JOINABLE, thread_loop func = NULL);
+
+        void start();
+        void stop();
+        void exit();
+        virtual void run(void *arg) = 0;
+
+        string name(){return this->thread_info.name;}
+        state_t state(){return this->thread_info.state;}
+        pthread_t thread_id(){return this->thread_info.thread_id;}
+
+        friend ostream& operator<< (ostream &out, CommonThread &thread);
+    };
+    class Thread : public CommonThread
+    {
+    public:
+        Thread(thread_loop target=NULL, string name = "None", detach_t detach = E_THREAD_JOINABLE);
+        void run(void *arg);
     };
 }
 

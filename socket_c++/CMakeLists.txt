@@ -8,7 +8,7 @@ SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -D_REENTRANT")
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp mThread/CommonThread.cpp)
 aux_source_directory(mSocket/ SOURCE_FILES)
 aux_source_directory(mThread/ SOURCE_FILES)
 #set(SOURCE_FILES mSocket/Address.cpp mSocket/CommonSocket.cpp mSocket/Datagram.cpp mSocket/SocketException.cpp mSocket/TCP.cpp mSocket/UDP.cpp)
