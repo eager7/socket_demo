@@ -29,25 +29,13 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <signal.h>
+#include <string.h>
 
 using namespace std;
-
-#define UI_RED(x)       "\e[31;1m" x "\e[0m"
-#define UI_GREEN(x)     "\e[32;1m" x "\e[0m"
-#define UI_YELLOW(x)    "\e[33;1m" x "\e[0m"
-#define UI_BLUE(x)      "\e[34;1m" x "\e[0m"
-#define UI_PURPLE(x)    "\e[35;1m" x "\e[0m"
-
-#define DBG_vPrintf(a,b,ARGS...)  do {  if (a) {printf(UI_BLUE	(b) , ## ARGS);} } while(0)
-#define INF_vPrintf(a,b,ARGS...)  do {  if (a) {printf(UI_YELLOW(b) , ## ARGS);} } while(0)
-#define NOT_vPrintf(a,b,ARGS...)  do {  if (a) {printf(UI_GREEN	(b) , ## ARGS);} } while(0)
-#define WAR_vPrintf(a,b,ARGS...)  do {  if (a) {printf(UI_PURPLE(b) , ## ARGS);} } while(0)
-#define ERR_vPrintf(a,b,ARGS...)  do {  if (a) {printf(UI_RED	("[%s:%d]") b, __FILE__, __LINE__, ## ARGS);} } while(0)
 
 namespace mThread
 {
 #define THREAD_SIGNAL SIGUSR1
-    static int dbg = 1;
     typedef enum{
         T_TRUE = 0x01,
         T_FALSE = 0x00,
@@ -84,7 +72,9 @@ namespace mThread
         void *pthread_data;
         pthread_t thread_id;
 
-        ThreadInfo(): name(NULL),state(E_THREAD_STOPPED),detach(E_THREAD_JOINABLE),pthread_data(NULL),thread_id(0) { }
+        ThreadInfo():
+                name(NULL),state(E_THREAD_STOPPED),
+                detach(E_THREAD_JOINABLE),pthread_data(NULL),thread_id(0) { }
         ThreadInfo(string name, detach_t detach, void *pthread_data):
                 state(E_THREAD_STOPPED),thread_id(0) {
             this->name = name;
@@ -130,7 +120,6 @@ namespace mThread
             this->apvBuffer[this->rear] = pvData;
 
             this->rear = (this->rear+1) % this->length;
-            INF_vPrintf(dbg, "mQueueEnqueue[%p]:%d done\n", this, this->rear);
 
             pthread_mutex_unlock(&this->mutex);
             pthread_cond_broadcast(&this->cond_data_available);
@@ -142,7 +131,6 @@ namespace mThread
             *ppvData = this->apvBuffer[this->front];
 
             this->front = (this->front + 1) % this->length;
-            NOT_vPrintf(dbg, "mQueueDequeue[%p]:%d done\n", this, this->front);
             pthread_mutex_unlock(&this->mutex);
             pthread_cond_broadcast(&this->cond_space_available);
         }
@@ -156,7 +144,6 @@ namespace mThread
         Thread();
         Thread(Thread &);
         Thread(thread_loop target=NULL, string name = "None", void *pthread_data = NULL, detach_t detach = E_THREAD_JOINABLE);
-        Thread &operator()(){ return *this; }
         ~Thread();
 
         void create(detach_t detach, void *info);
@@ -167,6 +154,8 @@ namespace mThread
         string name(){return this->thread_info.name;}
         state_t state(){return this->thread_info.state;}
         pthread_t thread_id(){return this->thread_info.thread_id;}
+
+        friend ostream& operator<< (ostream &out, Thread &thread);
     protected:
         bool_t _create;
         void install_signal();
@@ -174,6 +163,7 @@ namespace mThread
     private:
         ThreadInfo thread_info;
         static void thread_signal_handler(int sig);
+
     };
 }
 

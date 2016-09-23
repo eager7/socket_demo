@@ -57,7 +57,7 @@ namespace mSocket
         if (listen(this->_socket_id, listeners) != 0)
         {
             stringstream error;
-            error << "[listen_on_port] with [port=" << port << "] [listeners=" << listeners << "] Cannot bind socket";
+            error << "[listen_on_port] with [port=" << port << "] [listeners=" << listeners << "] Cannot bind socket" << strerror(errno);
             throw SocketException(error.str());
         }
     }
@@ -71,7 +71,7 @@ namespace mSocket
         if (connect(this->_socket_id, (struct sockaddr*)&address, sizeof(struct sockaddr_in)) < 0)
         {
             stringstream error;
-            error << "[connect_to] with [address=" << address << "] Cannot connect to the specified address";
+            error << "[connect_to] with [address=" << address << "] Cannot connect to the specified address:" << strerror(errno);
             throw SocketException(error.str());
         }
         
@@ -106,7 +106,9 @@ namespace mSocket
         
         int ret;
         if ((ret = (int)::send(this->_socket_id, (const void*)buffer, len, 0)) == -1) {
-            throw SocketException("[send] Cannot send");
+            stringstream error;
+            error << "[send] Cannot send:" << strerror(errno);
+            throw SocketException(error.str());
         }
         return ret;
     }
@@ -126,7 +128,9 @@ namespace mSocket
         
         int ret;
         if ((ret = (int)recv(this->_socket_id, buffer, len, 0)) == -1) {
-            throw SocketException("[send] Cannot receive");
+            stringstream error;
+            error << "[send] Cannot receive:" << strerror(errno);
+            throw SocketException(error.str());
         }
         return ret;
     }
@@ -141,7 +145,7 @@ namespace mSocket
         if (!fp.is_open())
         {
             stringstream error;
-            error << "[send_file] with [filename=" << file_name << "] Cannot open the file";
+            error << "[send_file] with [filename=" << file_name << "] Cannot open the file:" << strerror(errno);
             throw SocketException(error.str());
         }
         
@@ -177,7 +181,7 @@ namespace mSocket
         if (!fp.is_open())
         {
             stringstream error;
-            error << "[send_file] with [filename=" << file_name << "] Cannot open the file";
+            error << "[send_file] with [filename=" << file_name << "] Cannot open the file:" << strerror(errno);
             throw SocketException(error.str());
         }
         

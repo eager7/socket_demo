@@ -40,8 +40,11 @@ namespace mSocket
 
     void CommonSocket::open(void) {
         if (!this->_opened) {
-            if ((this->_socket_id = socket(AF_INET, this->_socket_type, 0)) == -1)
-                throw SocketException("[open] Cannot create socket");
+            if ((this->_socket_id = socket(AF_INET, this->_socket_type, 0)) == -1){
+                stringstream error;
+                error << "[open] Cannot create socket:"  << strerror(errno);
+                throw SocketException(error.str());
+            }
             this->_opened = true;
             this->_binded = false;
         }
@@ -63,9 +66,16 @@ namespace mSocket
 
         Address address(port);
 
+        int re = 1;
+        if(setsockopt(this->_socket_id, SOL_SOCKET, SO_REUSEADDR, &re, sizeof(re)) < 0){
+            stringstream error;
+            error << "[setsockopt] with [port=" << port << "] Cannot set socket:" << strerror(errno);
+            throw SocketException(error.str());
+        }
+
         if (bind(this->_socket_id, (struct sockaddr*)&address, sizeof(struct sockaddr)) == -1) {
             stringstream error;
-            error << "[listen_on_port] with [port=" << port << "] Cannot bind socket";
+            error << "[listen_on_port] with [port=" << port << "] Cannot bind socket:" << strerror(errno);
             throw SocketException(error.str());
         }
 

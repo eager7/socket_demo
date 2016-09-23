@@ -40,32 +40,29 @@ namespace mThread
     }
 
     void Thread::install_signal() {
-        {
-            /* Set up sigmask to receive configured signal in the main thread.
-            * All created threads also get this signal mask, so all threads
-            * get the signal. But we can use pthread_signal to direct it at one.
-            */
-            struct sigaction sa;
-            sa.sa_handler = thread_signal_handler;
-            sa.sa_flags = 0;
-            sigemptyset(&sa.sa_mask);
-
-            if (sigaction(THREAD_SIGNAL, &sa, NULL) == -1) {
-                throw ThreadException("[signal] can't install thread signal");
-            }
+        /* Set up sigmask to receive configured signal in the main thread.
+        * All created threads also get this signal mask, so all threads
+        * get the signal. But we can use pthread_signal to direct it at one.
+        */
+        struct sigaction sa;
+        sa.sa_handler = thread_signal_handler;
+        sa.sa_flags = 0;
+        sigemptyset(&sa.sa_mask);
+        if (sigaction(THREAD_SIGNAL, &sa, NULL) == -1) {
+            throw ThreadException("[signal] can't install thread signal");
         }
     }
 
     void Thread::create(detach_t detach, void *info) {
         if(!this->_create){
             if(pthread_create(&this->thread_info.thread_id, NULL, this->func, info) != 0) {
-                throw ThreadException("[create] create thread failed");
+                stringstream error;
+                error << "[create] create thread failed:" << strerror(errno) << endl;
+                throw ThreadException(error.str());
             }
-            if (detach == E_THREAD_DETACHED)
-            {
+            if (detach == E_THREAD_DETACHED) {
                 cout << "Detached Thread:" << this->thread_info.name << endl;
-                if (pthread_detach(this->thread_info.thread_id))
-                {
+                if (pthread_detach(this->thread_info.thread_id)) {
                     throw ThreadException("[detach] can't create detached thread");
                 }
             }
@@ -81,22 +78,25 @@ namespace mThread
         this->thread_info.state = E_THREAD_RUNNING;
     }
 
+    //call in father thread
     void Thread::stop() {
         this->thread_info.state = E_THREAD_STOPPING;
         /* Send signal to the thread to kick it out of any system call it was in */
         pthread_kill(this->thread_info.thread_id, THREAD_SIGNAL);
         if (this->thread_info.detach == E_THREAD_JOINABLE){
-            WAR_vPrintf(dbg, "Join Thread\n");
             if(pthread_join(this->thread_info.thread_id, NULL)){
-                throw ThreadException("[join] pthread_join error");
+                stringstream error;
+                error << "[join] pthread_join error:" << strerror(errno) << endl;
+                throw ThreadException(error.str());
             }
         }
         this->thread_info.state = E_THREAD_STOPPED;
-        WAR_vPrintf(dbg, "Stop Thread: %ld\n", this->thread_id());
+        cout << "Stop Thread:" << this->name() << endl;
     }
 
+    //call in child thread
     void Thread::exit() {
-        WAR_vPrintf(dbg, "Exit Thread: %ld\n", this->thread_id());
+        cout << "Exit Thread:" << this->name() << endl;
         this->thread_info.state = E_THREAD_STOPPED;
         pthread_exit(NULL);
     }
@@ -105,8 +105,13 @@ namespace mThread
      *  This is just used to interrupt system calls such as recv() and sleep().
      */
     void Thread::thread_signal_handler(int sig) {
-        DBG_vPrintf(T_TRUE, "Signal %d received\n", sig);
+        cout << "Signal received:" << sig << endl;
     }
 
     Thread::~Thread() { }
+
+    ostream& operator<< (ostream &out, Thread &thread) {
+        out << thread.name() << ":" << thread.state() << ":" << thread.thread_id();
+        return out;
+    }
 }

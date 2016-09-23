@@ -36,7 +36,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-
+#include <string.h>
 
 #define SOCKET_MAX_BUFFER_LEN 1024
 
