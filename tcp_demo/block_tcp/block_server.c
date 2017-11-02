@@ -8,7 +8,7 @@
 
 #define checkError(ret) do{if(-1==ret){printf("[%d]err:%s\n", __LINE__, strerror(errno));exit(1);}}while(0)
 
-unsigned char auSendData[11] = {0};
+unsigned char auSendData[13] = {0};
 	
 int main(int argc, char const *argv[])
 {
@@ -64,9 +64,9 @@ reconnect:
 		memcpy(auSendData, &iTime, sizeof(iTime));
 		auSendData[4] = 0;
 		auSendData[5] = 201;
-		auSendData[6] = 4;
-		int iDeviceID = 0x000F423E;
-		memcpy(&auSendData[7], &iDeviceID, 4);
+		auSendData[6] = 6;
+		int iDeviceID = 0x00000C060611;
+		memcpy(&auSendData[7], &iDeviceID, 6);
 		checkError(send(iSockClient, auSendData, sizeof(auSendData), 0));
 		sleep(1);
     }
