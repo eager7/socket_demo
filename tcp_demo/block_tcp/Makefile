@@ -1,5 +1,5 @@
 
-TARGET := block_thread
+TARGET := block_server
 
 SOURCE := $(TARGET).c
 

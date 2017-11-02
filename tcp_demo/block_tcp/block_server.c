@@ -4,9 +4,12 @@
 #include <errno.h>
 #include <arpa/inet.h>
 #include <unistd.h> //usleep
+#include <time.h>
 
 #define checkError(ret) do{if(-1==ret){printf("[%d]err:%s\n", __LINE__, strerror(errno));exit(1);}}while(0)
 
+unsigned char auSendData[11] = {0};
+	
 int main(int argc, char const *argv[])
 {
 	printf("this is tcp demo\n");
@@ -56,8 +59,15 @@ reconnect:
 			goto reconnect;
 		}
 		printf("recv client ip:%s, data:%s\n", inet_ntoa(client_addr.sin_addr), aRecv);
-
-		checkError(send(iSockClient, aSend, strlen(aSend), 0));
+		
+		int iTime = time((time_t*)NULL);
+		memcpy(auSendData, &iTime, sizeof(iTime));
+		auSendData[4] = 0;
+		auSendData[5] = 201;
+		auSendData[6] = 4;
+		int iDeviceID = 0x000F423E;
+		memcpy(&auSendData[7], &iDeviceID, 4);
+		checkError(send(iSockClient, auSendData, sizeof(auSendData), 0));
 		sleep(1);
     }
 
