@@ -58,10 +58,10 @@ reconnect:
 			close(iSockClient);
 			goto reconnect;
 		}
-		printf("recv client ip:%s, data:%s", inet_ntoa(client_addr.sin_addr));
+		printf("recv client ip:%s, data:", inet_ntoa(client_addr.sin_addr));
         int i = 0;
         for(i = 0; i < irecv; i++){
-            printf("0x%02x,");
+            printf("0x%02x,", aRecv[i]);
         }printf("\n");
 		
 		int iTime = time((time_t*)NULL);
