@@ -40,7 +40,7 @@ reconnect:
 	printf("client ipaddr:%s\n", inet_ntoa(client_addr.sin_addr));
 
 	const char *aSend = "This is tcp server";
-	char aRecv[2048] = {0};	
+	unsigned char aRecv[2048] = {0};	
     while(1)
     {
     	printf("wait client data...\n");
@@ -58,7 +58,11 @@ reconnect:
 			close(iSockClient);
 			goto reconnect;
 		}
-		printf("recv client ip:%s, data:%s\n", inet_ntoa(client_addr.sin_addr), aRecv);
+		printf("recv client ip:%s, data:%s", inet_ntoa(client_addr.sin_addr));
+        int i = 0;
+        for(i = 0; i < irecv; i++){
+            printf("0x%02x,");
+        }printf("\n");
 		
 		int iTime = time((time_t*)NULL);
 		memcpy(auSendData, &iTime, sizeof(iTime));
