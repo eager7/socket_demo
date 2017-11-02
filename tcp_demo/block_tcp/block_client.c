@@ -11,6 +11,7 @@
 int main(int argc, char const *argv[])
 {
 	printf("this is a tcp client demo\n");
+    int i = 0;
 
 	signal(SIGPIPE, SIG_IGN);//ingnore signal interference
 	int iSocketFd = 0;
@@ -35,7 +36,7 @@ reconnect:
     	sleep(1);
 	}
 
-	char aRecv[2048] = {0};	
+	unsigned char aRecv[2048] = {0};	
 	const char *aSend = "This is tcp client";
     while(1)
     {
@@ -56,8 +57,14 @@ reconnect:
 			close(iSocketFd);
 			goto reconnect;
 		}
-		printf("server ip:%s, data:%s\n", inet_ntoa(server_addr.sin_addr), aRecv);
-		sleep(1);
+		printf("server ip:%s, data:", inet_ntoa(server_addr.sin_addr));
+		for(i = 0; i < irecv; i++){
+            printf("0x%02x,", aRecv[i]);
+        }
+        printf("\n");
+        
+        sleep(1);
+
     }
 
 	return 0;
